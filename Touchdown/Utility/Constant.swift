@@ -27,6 +27,7 @@ var gridLayout: [GridItem] {
 }
 
 //MARK: -  UX
+let feedback = UIImpactFeedbackGenerator(style: .medium)
 
 //MARK: - API
 

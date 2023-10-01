@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     // MARK: - PROPERTIES
+    @EnvironmentObject var shop: Shop
     
     func returnTopInset() -> CGFloat {
         let scenes = UIApplication.shared.connectedScenes
@@ -23,7 +24,7 @@ struct ContentView: View {
     // MARK: - BODY
     var body: some View {
         ZStack {
-            GeometryReader { geometry in
+            if !shop.showingProduct && shop.selectedProduct == nil {
                 VStack(spacing: 0) {
                     NavigationBarView()
                         .padding(.horizontal, 15)
@@ -36,7 +37,7 @@ struct ContentView: View {
                         VStack(spacing: 0) {
                             FeaturedTabView()
                                 .padding(.vertical, 20)
-                                .frame(width: geometry.size.width, height: 300)
+                                .frame(height: 300)
                             
                             CategoryGridView()
                             
@@ -45,6 +46,14 @@ struct ContentView: View {
                             LazyVGrid(columns: gridLayout, spacing: 15, content: {
                                 ForEach(products) {product in
                                     ProductItemView(product: product)
+                                        .onTapGesture {
+                                            feedback.impactOccurred()
+                                            
+                                            withAnimation(.easeOut) {
+                                                shop.selectedProduct = product
+                                                shop.showingProduct = true
+                                            }
+                                        }
                                 } //: LOOP
                             }) //: GRID
                             .padding(15)
@@ -60,6 +69,8 @@ struct ContentView: View {
                     
                 } //: VSTACK
                 .background(colorBackground.ignoresSafeArea(.all, edges: .all))
+            } else {
+                ProductDetailView()
             }
         } //: ZSTACK
         .ignoresSafeArea(.all, edges: .top)
@@ -69,4 +80,5 @@ struct ContentView: View {
 // MARK:  PREVIEW
 #Preview {
     ContentView()
+        .environmentObject(Shop())
 }
